@@ -10,199 +10,183 @@
 <style>
 *{
   box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
   margin:0;
   width:100%;
   height:100%;
-  background:#f7f2e3;
   overflow:hidden;
-
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Hiragino Sans",
-    "Yu Gothic",
-    sans-serif;
-}
-
-body{
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  background:#111;
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
 }
 
 #app{
-  width:100%;
-  height:100%;
-
-  display:flex;
-  flex-direction:column;
-
-  align-items:center;
-  justify-content:center;
-
-  padding:20px;
-}
-
-.camera{
   position:relative;
-
-  width:min(92vw,650px);
-  aspect-ratio:1/1;
-
-  border-radius:28px;
-
-  overflow:hidden;
-
-  background:#ded8ca;
-}
-
-video,
-#imagePreview{
-  position:absolute;
-
-  inset:0;
-
   width:100%;
   height:100%;
+  background:#111;
+  overflow:hidden;
+}
 
+/* カメラ */
+#video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
   object-fit:cover;
+  background:#111;
+}
 
+/* 円形ガイド */
+#guide{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(82vw,82vh);
+  height:min(82vw,82vh);
+  transform:translate(-50%,-50%);
+  border:2px dashed rgba(255,255,255,.85);
+  border-radius:50%;
+  pointer-events:none;
+  box-shadow:
+    0 0 0 9999px rgba(0,0,0,.12),
+    0 0 25px rgba(255,255,255,.12);
+}
+
+/* スキャンボタン */
+#scanButton{
+  position:absolute;
+  left:50%;
+  bottom:74px;
+  transform:translateX(-50%);
+  
+  width:76px;
+  height:76px;
+  border-radius:50%;
+  
+  border:5px solid rgba(255,255,255,.95);
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  
+  cursor:pointer;
+  outline:none;
+}
+
+#scanButton:active{
+  transform:translateX(-50%) scale(.92);
+  background:rgba(255,255,255,.35);
+}
+
+/* 画像読み込み */
+#imageButton{
+  position:absolute;
+  left:50%;
+  bottom:24px;
+  transform:translateX(-50%);
+  
+  border:0;
+  background:transparent;
+  color:white;
+  font-size:14px;
+  padding:4px 12px;
+  
+  cursor:pointer;
+  opacity:.9;
+}
+
+#imageInput{
   display:none;
 }
 
-video.active,
-#imagePreview.active{
+/* 結果 */
+#result{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  
+  width:min(82vw,600px);
+  max-height:40vh;
+  overflow:auto;
+  
+  padding:18px 22px;
+  
+  border-radius:20px;
+  background:rgba(255,255,255,.94);
+  color:#51483f;
+  
+  font-size:17px;
+  line-height:1.5;
+  text-align:center;
+  
+  display:none;
+  word-break:break-all;
+  box-shadow:0 10px 40px rgba(0,0,0,.3);
+}
+
+#result.show{
   display:block;
 }
 
-
-/* =====================================================
-   丸いガイド
-===================================================== */
-
-.guide{
-  position:absolute;
-
-  left:50%;
-  top:50%;
-
-  width:86%;
-  aspect-ratio:1/1;
-
-  transform:
-    translate(-50%,-50%);
-
-  border:
-    3px dashed
-    rgba(255,255,255,.92);
-
-  border-radius:50%;
-
-  pointer-events:none;
-
-  filter:
-    drop-shadow(
-      0 1px 4px
-      rgba(0,0,0,.3)
-    );
-}
-
-
-/* =====================================================
-   ボタン
-===================================================== */
-
-.buttons{
-  width:min(92vw,650px);
-
-  display:flex;
-
-  gap:10px;
-
-  margin-top:16px;
-}
-
-button{
-  flex:1;
-
-  border:0;
-
-  border-radius:999px;
-
-  padding:15px 18px;
-
-  background:#71866c;
-
-  color:white;
-
-  font-size:16px;
-
-  font-weight:700;
-
-  cursor:pointer;
-
-  -webkit-tap-highlight-color:transparent;
-}
-
-button:active{
-  transform:scale(.98);
-}
-
-
-/* =====================================================
-   画像
-===================================================== */
-
-input[type=file]{
-  display:none;
-}
-
-
-/* =====================================================
-   結果
-===================================================== */
-
-#result{
-  width:min(92vw,650px);
-
+#resultClose{
   margin-top:14px;
-
-  padding:12px 16px;
-
-  min-height:46px;
-
-  border-radius:14px;
-
-  background:
-    rgba(255,255,255,.72);
-
-  color:#66584d;
-
-  font-size:16px;
-
-  text-align:center;
-
-  word-break:break-word;
-
-  display:none;
+  border:0;
+  border-radius:12px;
+  padding:9px 18px;
+  background:#51483f;
+  color:white;
+  font-size:14px;
 }
 
-
-/* =====================================================
-   バージョン
-===================================================== */
-
-.version{
-  margin-top:4px;
-
+/* バージョン */
+#version{
+  position:absolute;
+  left:50%;
+  bottom:6px;
+  transform:translateX(-50%);
+  
+  color:rgba(255,255,255,.58);
   font-size:9px;
+  letter-spacing:.4px;
+  pointer-events:none;
+}
 
-  opacity:.42;
+/* カメラなし */
+#cameraMessage{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:14px;
+  pointer-events:none;
+}
 
-  letter-spacing:.08em;
+/* スキャン中 */
+#flash{
+  position:absolute;
+  inset:0;
+  background:white;
+  opacity:0;
+  pointer-events:none;
+}
+
+#flash.active{
+  animation:flash .18s ease-out;
+}
+
+@keyframes flash{
+  0%{opacity:.65}
+  100%{opacity:0}
+}
+
+canvas{
+  display:none;
 }
 </style>
 </head>
@@ -211,1562 +195,1145 @@ input[type=file]{
 
 <div id="app">
 
-  <div class="camera">
+  <video
+    id="video"
+    autoplay
+    muted
+    playsinline>
+  </video>
 
-    <video
-      id="video"
-      autoplay
-      playsinline>
-    </video>
+  <div id="cameraMessage"></div>
 
-    <img
-      id="imagePreview"
-      alt="">
+  <div id="guide"></div>
 
-    <div class="guide"></div>
+  <button id="scanButton" aria-label="スキャン"></button>
 
-  </div>
-
-
-  <div class="buttons">
-
-    <button id="scanButton">
-      スキャン
-    </button>
-
-    <button id="imageButton">
-      画像から読み込み
-    </button>
-
-  </div>
-
+  <button id="imageButton">
+    画像から読み込み
+  </button>
 
   <input
-    id="fileInput"
+    id="imageInput"
     type="file"
     accept="image/*">
 
+  <div id="flash"></div>
 
-  <div id="result"></div>
-
-
-  <div class="version">
-    POTE CODE SCANNER ver 1.1
+  <div id="result">
+    <div id="resultText"></div>
+    <button id="resultClose">閉じる</button>
   </div>
+
+  <div id="version">
+    POTE CODE SCANNER ver 1.2
+  </div>
+
+  <canvas id="canvas"></canvas>
 
 </div>
 
 
 <script>
-
 /* =========================================================
-   POTE CODE SCANNER ver 1.1
+   POTE CODE SCANNER
+   ver 1.2
+   ========================================================= */
 
-   3つの角度合わせマーク：
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d", {
+  willReadFrequently:true
+});
 
-   O                 O
+const scanButton = document.getElementById("scanButton");
+const imageButton = document.getElementById("imageButton");
+const imageInput = document.getElementById("imageInput");
 
+const result = document.getElementById("result");
+const resultText = document.getElementById("resultText");
+const resultClose = document.getElementById("resultClose");
 
-   O
-
-   これを使って
-   位置・回転・拡大縮小を補正する。
-
-   データは544スロット。
-
-   各スロット：
-   図形あり = 1
-   図形なし = 0
-
-========================================================= */
-
-
-/* =========================================================
-   DOM
-========================================================= */
-
-const video=
-  document.getElementById("video");
-
-const imagePreview=
-  document.getElementById("imagePreview");
-
-const scanButton=
-  document.getElementById("scanButton");
-
-const imageButton=
-  document.getElementById("imageButton");
-
-const fileInput=
-  document.getElementById("fileInput");
-
-const result=
-  document.getElementById("result");
+const flash = document.getElementById("flash");
+const cameraMessage = document.getElementById("cameraMessage");
 
 
 /* =========================================================
-   状態
-========================================================= */
+   POTE CODE 固定設定
+   ========================================================= */
 
-let stream=null;
+const SVG_SIZE = 1500;
 
-let scanning=false;
+const CENTER = 750;
 
-let scanTimer=null;
+const OUTER_R = 680;
 
-let scanBusy=false;
+const SLOT_COUNT = 544;
 
+const GROUP_SIZE = 32;
+const GROUPS = 17;
+const ON_PER_GROUP = 16;
 
-/*
- URLを新しいタブで開くため、
- スキャンボタンを押した時点で
- 空のタブを確保する。
 
- 普通の文字なら後で閉じる。
-*/
+/* 生成側と同じ固定シード */
+const SEED = 9283746;
 
-let pendingWindow=null;
 
+/* 生成側と同じ範囲 */
+const MIN_R = 175;
+const MAX_R = 640;
+const MIN_DISTANCE = 35;
 
-/* =========================================================
-   固定値
-========================================================= */
 
-const CENTER=750;
+/* 3つの角度合わせマーク */
 
-const SLOT_COUNT=544;
-
-const MIN_R=175;
-
-const MAX_R=640;
-
-
-/* =========================================================
-   固定スロット
-   生成側と完全に同じ。
-========================================================= */
-
-let seed=9283746;
-
-function random(){
-
-  seed=
-    (seed*1664525+1013904223)
-    >>>0;
-
-  return seed/4294967296;
-
-}
-
-
-function createSlots(){
-
-  seed=9283746;
-
-  const result=[];
-
-  const MIN_DISTANCE=35;
-
-  let safety=0;
-
-
-  while(
-    result.length<SLOT_COUNT &&
-    safety<1000000
-  ){
-
-    safety++;
-
-
-    const r=
-      Math.sqrt(
-        random()*
-        (
-          MAX_R*MAX_R-
-          MIN_R*MIN_R
-        )+
-        MIN_R*MIN_R
-      );
-
-
-    const angle=
-      random()*Math.PI*2;
-
-
-    const x=
-      CENTER+
-      Math.cos(angle)*r;
-
-
-    const y=
-      CENTER+
-      Math.sin(angle)*r;
-
-
-    let ok=true;
-
-
-    for(
-      const p of result
-    ){
-
-      const dx=x-p.x;
-
-      const dy=y-p.y;
-
-
-      if(
-        dx*dx+
-        dy*dy<
-        MIN_DISTANCE*MIN_DISTANCE
-      ){
-
-        ok=false;
-
-        break;
-
-      }
-
-    }
-
-
-    const marks=[
-      {x:255,y:275},
-      {x:1245,y:275},
-      {x:255,y:1245}
-    ];
-
-
-    for(
-      const m of marks
-    ){
-
-      const dx=x-m.x;
-
-      const dy=y-m.y;
-
-
-      if(
-        dx*dx+
-        dy*dy<
-        90*90
-      ){
-
-        ok=false;
-
-        break;
-
-      }
-
-    }
-
-
-    if(ok){
-
-      result.push({
-        x,
-        y
-      });
-
-    }
-
-  }
-
-
-  return result;
-
-}
-
-
-const DATA_SLOTS=
-  createSlots();
-
-
-/* =========================================================
-   角度合わせマーク
-========================================================= */
-
-const ALIGN_MARKS=[
-  {
-    x:255,
-    y:275
-  },
-  {
-    x:1245,
-    y:275
-  },
-  {
-    x:255,
-    y:1245
-  }
+const MARKS = [
+  {x:255,  y:275},
+  {x:1245, y:275},
+  {x:255,  y:1245}
 ];
 
 
 /* =========================================================
-   Canvas
-========================================================= */
-
-const canvas=
-  document.createElement("canvas");
-
-const ctx=
-  canvas.getContext(
-    "2d",
-    {
-      willReadFrequently:true
-    }
-  );
-
-
-/* =========================================================
-   スキャン開始
-========================================================= */
-
-scanButton.addEventListener(
-  "click",
-  async()=>{
-
-    /*
-      URLだった場合に
-      新しいタブを開けるように
-      先に空タブを確保。
-    */
-
-    try{
-
-      pendingWindow=
-        window.open(
-          "",
-          "_blank"
-        );
-
-    }
-    catch(e){
-
-      pendingWindow=null;
-
-    }
-
-
-    try{
-
-      if(
-        !stream
-      ){
-
-        stream=
-          await navigator.mediaDevices
-          .getUserMedia({
-
-            video:{
-              facingMode:{
-                ideal:"environment"
-              },
-
-              width:{
-                ideal:1920
-              },
-
-              height:{
-                ideal:1920
-              }
-            },
-
-            audio:false
-
-          });
-
-      }
-
-
-      video.srcObject=stream;
-
-      video.classList.add("active");
-
-      imagePreview.classList.remove("active");
-
-      result.style.display="none";
-
-      scanning=true;
-
-      scanButton.textContent=
-        "スキャン中";
-
-
-      if(scanTimer){
-
-        clearInterval(
-          scanTimer
-        );
-
-      }
-
-
-      /*
-        約8回/秒で解析。
-      */
-
-      scanTimer=
-        setInterval(
-          scanCameraFrame,
-          125
-        );
-
-
-    }
-    catch(error){
-
-      if(pendingWindow){
-
-        pendingWindow.close();
-
-        pendingWindow=null;
-
-      }
-
-
-      alert(
-        "カメラを起動できませんでした。"
-      );
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   カメラフレーム
-========================================================= */
-
-function scanCameraFrame(){
-
-  if(
-    !scanning ||
-    scanBusy
-  ){
-
-    return;
-
-  }
-
-
-  if(
-    video.readyState<2
-  ){
-
-    return;
-
-  }
-
-
-  scanBusy=true;
-
-
-  try{
-
-    const w=
-      video.videoWidth;
-
-    const h=
-      video.videoHeight;
-
-
-    if(
-      !w ||
-      !h
-    ){
-
-      return;
-
-    }
-
-
-    const max=1200;
-
-
-    const scale=
-      Math.min(
-        1,
-        max/Math.max(w,h)
-      );
-
-
-    canvas.width=
-      Math.round(w*scale);
-
-    canvas.height=
-      Math.round(h*scale);
-
-
-    ctx.drawImage(
-      video,
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
-
-
-    tryDecode();
-
-  }
-  finally{
-
-    scanBusy=false;
-
-  }
-
+   deterministic random
+   ========================================================= */
+
+function mulberry32(a){
+  return function(){
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
 }
 
 
 /* =========================================================
-   画像読み込み
-========================================================= */
+   固定スロット生成
+   ========================================================= */
 
-imageButton.addEventListener(
-  "click",
-  ()=>{
-    fileInput.click();
+function distance(a,b){
+  const dx=a.x-b.x;
+  const dy=a.y-b.y;
+  return Math.sqrt(dx*dx+dy*dy);
+}
+
+
+function insideMarkArea(p){
+
+  for(const m of MARKS){
+
+    const dx=p.x-m.x;
+    const dy=p.y-m.y;
+
+    if(Math.sqrt(dx*dx+dy*dy)<90){
+      return true;
+    }
   }
-);
+
+  return false;
+}
 
 
-fileInput.addEventListener(
-  "change",
-  ()=>{
+function generateSlots(){
 
-    const file=
-      fileInput.files[0];
+  const rand = mulberry32(SEED);
 
+  const slots=[];
 
-    if(!file){
+  let tries=0;
 
-      return;
+  while(
+    slots.length<SLOT_COUNT &&
+    tries<3000000
+  ){
 
-    }
+    tries++;
 
+    const angle=rand()*Math.PI*2;
 
-    if(scanTimer){
+    const r=
+      MIN_R+
+      Math.sqrt(rand())*(MAX_R-MIN_R);
 
-      clearInterval(
-        scanTimer
-      );
-
-      scanTimer=null;
-
-    }
-
-
-    scanning=false;
-
-
-    if(pendingWindow){
-
-      pendingWindow.close();
-
-      pendingWindow=null;
-
-    }
-
-
-    const url=
-      URL.createObjectURL(file);
-
-
-    imagePreview.src=url;
-
-
-    imagePreview.onload=()=>{
-
-      video.classList.remove("active");
-
-      imagePreview.classList.add("active");
-
-
-      const w=
-        imagePreview.naturalWidth;
-
-      const h=
-        imagePreview.naturalHeight;
-
-
-      const max=1600;
-
-
-      const scale=
-        Math.min(
-          1,
-          max/Math.max(w,h)
-        );
-
-
-      canvas.width=
-        Math.round(w*scale);
-
-      canvas.height=
-        Math.round(h*scale);
-
-
-      ctx.drawImage(
-        imagePreview,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-
-
-      tryDecode();
-
+    const p={
+      x:CENTER+Math.cos(angle)*r,
+      y:CENTER+Math.sin(angle)*r
     };
 
-  }
-);
-
-
-/* =========================================================
-   円形マーク検出
-========================================================= */
-
-function findAlignmentMarks(){
-
-  const w=
-    canvas.width;
-
-  const h=
-    canvas.height;
-
-
-  const image=
-    ctx.getImageData(
-      0,
-      0,
-      w,
-      h
-    );
-
-
-  const data=
-    image.data;
-
-
-  /*
-    生成側の角度合わせマークは
-    #51483F。
-
-    データ図形にはこの色を
-    使っていない。
-
-    そのため色相を使って
-    登録マークを探せる。
-  */
-
-  const candidates=[];
-
-  const step=
-    Math.max(
-      3,
-      Math.floor(
-        Math.min(w,h)/450
-      )
-    );
-
-
-  for(
-    let y=0;
-    y<h;
-    y+=step
-  ){
-
-    for(
-      let x=0;
-      x<w;
-      x+=step
-    ){
-
-      const i=
-        (y*w+x)*4;
-
-
-      const r=data[i];
-
-      const g=data[i+1];
-
-      const b=data[i+2];
-
-
-      /*
-        #51483F付近の暗い茶色。
-
-        カメラの色変化を考えて
-        少し幅を持たせる。
-      */
-
-      if(
-        r<115 &&
-        g<105 &&
-        b<100 &&
-        Math.abs(r-g)<35 &&
-        Math.abs(g-b)<30
-      ){
-
-        candidates.push({
-          x,
-          y
-        });
-
-      }
-
-    }
-
-  }
-
-
-  /*
-    暗い点の集まりを
-    クラスタリングする。
-  */
-
-  const clusters=[];
-
-  const used=
-    new Uint8Array(
-      candidates.length
-    );
-
-
-  const clusterDistance=
-    Math.min(w,h)*.035;
-
-
-  for(
-    let i=0;
-    i<candidates.length;
-    i++
-  ){
-
-    if(used[i]){
+    if(insideMarkArea(p)){
       continue;
     }
 
+    let ok=true;
 
-    const queue=[i];
+    for(const q of slots){
 
-    used[i]=1;
-
-
-    let sx=0;
-
-    let sy=0;
-
-    let count=0;
-
-
-    while(queue.length){
-
-      const index=
-        queue.pop();
-
-
-      const p=
-        candidates[index];
-
-
-      sx+=p.x;
-
-      sy+=p.y;
-
-      count++;
-
-
-      for(
-        let j=0;
-        j<candidates.length;
-        j++
-      ){
-
-        if(used[j]){
-          continue;
-        }
-
-
-        const q=
-          candidates[j];
-
-
-        const dx=
-          p.x-q.x;
-
-        const dy=
-          p.y-q.y;
-
-
-        if(
-          dx*dx+
-          dy*dy<
-          clusterDistance*
-          clusterDistance
-        ){
-
-          used[j]=1;
-
-          queue.push(j);
-
-        }
-
+      if(distance(p,q)<MIN_DISTANCE){
+        ok=false;
+        break;
       }
-
     }
 
+    if(!ok) continue;
 
-    if(
-      count>=4
-    ){
-
-      clusters.push({
-        x:sx/count,
-        y:sy/count,
-        count
-      });
-
-    }
-
+    slots.push(p);
   }
 
-
-  /*
-    大きいクラスタを候補にする。
-  */
-
-  clusters.sort(
-    (a,b)=>b.count-a.count
-  );
-
-
-  return clusters.slice(
-    0,
-    40
-  );
-
+  return slots;
 }
+
+
+const SLOTS = generateSlots();
 
 
 /* =========================================================
-   3マークを選ぶ
-========================================================= */
+   Math
+   ========================================================= */
 
-function assignMarks(points){
+function comb(n,k){
 
-  if(
-    points.length<3
-  ){
+  if(k<0 || k>n) return 0;
 
-    return null;
-
-  }
-
-
-  let best=null;
-
-  let bestScore=Infinity;
-
-
-  /*
-    3点を全部組み合わせる。
-  */
-
-  for(
-    let i=0;
-    i<points.length;
-    i++
-  ){
-
-    for(
-      let j=i+1;
-      j<points.length;
-      j++
-    ){
-
-      for(
-        let k=j+1;
-        k<points.length;
-        k++
-      ){
-
-        const ps=[
-          points[i],
-          points[j],
-          points[k]
-        ];
-
-
-        /*
-          上2点・左下1点になる
-          並びを試す。
-        */
-
-        const sorted=
-          [...ps].sort(
-            (a,b)=>a.y-b.y
-          );
-
-
-        const topA=
-          sorted[0];
-
-        const topB=
-          sorted[1];
-
-        const bottom=
-          sorted[2];
-
-
-        const left=
-          topA.x<topB.x
-          ?topA
-          :topB;
-
-
-        const right=
-          topA.x<topB.x
-          ?topB
-          :topA;
-
-
-        const topY=
-          (left.y+right.y)/2;
-
-
-        const topHeight=
-          Math.abs(
-            left.y-right.y
-          );
-
-
-        const topWidth=
-          Math.abs(
-            right.x-left.x
-          );
-
-
-        if(
-          topWidth<
-          Math.min(wSafe(),hSafe())*.25
-        ){
-
-          continue;
-
-        }
-
-
-        if(
-          topHeight>
-          topWidth*.45
-        ){
-
-          continue;
-
-        }
-
-
-        /*
-          左下マークなので
-          bottomは上2点の左側付近。
-        */
-
-        const expectedX=
-          left.x;
-
-
-        const dx=
-          Math.abs(
-            bottom.x-
-            expectedX
-          );
-
-
-        const dy=
-          bottom.y-
-          topY;
-
-
-        if(
-          dy<=topWidth*.25
-        ){
-
-          continue;
-
-        }
-
-
-        const score=
-          topHeight+
-          dx+
-          Math.abs(
-            dy-topWidth
-          )*.25;
-
-
-        if(
-          score<bestScore
-        ){
-
-          bestScore=score;
-
-          best={
-            left,
-            right,
-            bottom
-          };
-
-        }
-
-      }
-
-    }
-
-  }
-
-
-  return best;
-
-}
-
-
-function wSafe(){
-
-  return canvas.width;
-
-}
-
-
-function hSafe(){
-
-  return canvas.height;
-
-}
-
-
-/* =========================================================
-   アフィン変換
-========================================================= */
-
-function makeAffine(mark){
-
-  const p1=
-    mark.left;
-
-  const p2=
-    mark.right;
-
-  const p3=
-    mark.bottom;
-
-
-  const q1=
-    ALIGN_MARKS[0];
-
-  const q2=
-    ALIGN_MARKS[1];
-
-  const q3=
-    ALIGN_MARKS[2];
-
-
-  const x1=p1.x;
-  const y1=p1.y;
-
-  const x2=p2.x;
-  const y2=p2.y;
-
-  const x3=p3.x;
-  const y3=p3.y;
-
-
-  const det=
-    x1*(y2-y3)+
-    x2*(y3-y1)+
-    x3*(y1-y2);
-
-
-  if(
-    Math.abs(det)<1
-  ){
-
-    return null;
-
-  }
-
-
-  const a=
-    (
-      q1.x*(y2-y3)+
-      q2.x*(y3-y1)+
-      q3.x*(y1-y2)
-    )/det;
-
-
-  const b=
-    (
-      q1.x*(x3-x2)+
-      q2.x*(x1-x3)+
-      q3.x*(x2-x1)
-    )/det;
-
-
-  const c=
-    (
-      q1.x*(x2*y3-x3*y2)+
-      q2.x*(x3*y1-x1*y3)+
-      q3.x*(x1*y2-x2*y1)
-    )/det;
-
-
-  const d=
-    (
-      q1.y*(y2-y3)+
-      q2.y*(y3-y1)+
-      q3.y*(y1-y2)
-    )/det;
-
-
-  const e=
-    (
-      q1.y*(x3-x2)+
-      q2.y*(x1-x3)+
-      q3.y*(x2-x1)
-    )/det;
-
-
-  const f=
-    (
-      q1.y*(x2*y3-x3*y2)+
-      q2.y*(x3*y1-x1*y3)+
-      q3.y*(x1*y2-x2*y1)
-    )/det;
-
-
-  return {
-    a,b,c,d,e,f
-  };
-
-}
-
-
-/* =========================================================
-   POTE座標 → 画像座標
-========================================================= */
-
-function codeToImage(
-  T,
-  x,
-  y
-){
-
-  const det=
-    T.a*T.e-
-    T.b*T.d;
-
-
-  if(
-    Math.abs(det)<0.000001
-  ){
-
-    return null;
-
-  }
-
-
-  const tx=
-    x-T.c;
-
-  const ty=
-    y-T.f;
-
-
-  return {
-
-    x:
-      (
-        T.e*tx-
-        T.b*ty
-      )/det,
-
-    y:
-      (
-        -T.d*tx+
-        T.a*ty
-      )/det
-
-  };
-
-}
-
-
-/* =========================================================
-   図形判定
-
-   データ図形の色を
-   直接覚えるのではなく、
-
-   「背景から変化しているか」
-
-   を見る。
-========================================================= */
-
-function readShapeAt(
-  x,
-  y
-){
-
-  const radius=9;
-
-  const left=
-    Math.max(
-      0,
-      Math.floor(x-radius)
-    );
-
-  const top=
-    Math.max(
-      0,
-      Math.floor(y-radius)
-    );
-
-  const right=
-    Math.min(
-      canvas.width-1,
-      Math.ceil(x+radius)
-    );
-
-  const bottom=
-    Math.min(
-      canvas.height-1,
-      Math.ceil(y+radius)
-    );
-
-
-  if(
-    right<=left ||
-    bottom<=top
-  ){
-
-    return 0;
-
-  }
-
-
-  const width=
-    right-left+1;
-
-
-  const image=
-    ctx.getImageData(
-      left,
-      top,
-      width,
-      bottom-top+1
-    );
-
-
-  const data=
-    image.data;
-
-
-  let colored=0;
-
-  let total=0;
-
-
-  for(
-    let py=0;
-    py<=bottom-top;
-    py+=2
-  ){
-
-    for(
-      let px=0;
-      px<=right-left;
-      px+=2
-    ){
-
-      const dx=
-        left+px-x;
-
-      const dy=
-        top+py-y;
-
-
-      if(
-        dx*dx+
-        dy*dy>
-        radius*radius
-      ){
-
-        continue;
-
-      }
-
-
-      const i=
-        (
-          py*width+
-          px
-        )*4;
-
-
-      const r=data[i];
-
-      const g=data[i+1];
-
-      const b=data[i+2];
-
-
-      const brightness=
-        (r+g+b)/3;
-
-
-      const saturation=
-        Math.max(r,g,b)-
-        Math.min(r,g,b);
-
-
-      /*
-        背景に近い白ではない
-        色付き領域。
-      */
-
-      if(
-        brightness<230 ||
-        saturation>18
-      ){
-
-        colored++;
-
-      }
-
-
-      total++;
-
-    }
-
-  }
-
-
-  return
-    colored/
-    Math.max(
-      1,
-      total
-    )>.20
-    ?1
-    :0;
-
-}
-
-
-/* =========================================================
-   全544スロット
-========================================================= */
-
-function readAllSlots(T){
-
-  const bits=[];
-
-
-  for(
-    let i=0;
-    i<DATA_SLOTS.length;
-    i++
-  ){
-
-    const p=
-      DATA_SLOTS[i];
-
-
-    const imagePoint=
-      codeToImage(
-        T,
-        p.x,
-        p.y
-      );
-
-
-    if(!imagePoint){
-
-      bits.push(0);
-
-      continue;
-
-    }
-
-
-    bits.push(
-      readShapeAt(
-        imagePoint.x,
-        imagePoint.y
-      )
-    );
-
-  }
-
-
-  return bits;
-
-}
-
-
-/* =========================================================
-   組み合わせ
-========================================================= */
-
-function C(n,k){
-
-  if(
-    k<0||
-    k>n
-  ){
-
-    return 0;
-
-  }
-
-
-  k=
-    Math.min(
-      k,
-      n-k
-    );
-
+  k=Math.min(k,n-k);
 
   let r=1;
 
-
-  for(
-    let i=1;
-    i<=k;
-    i++
-  ){
-
-    r=
-      r*(n-k+i)/i;
-
+  for(let i=1;i<=k;i++){
+    r=r*(n-k+i)/i;
   }
 
-
   return Math.round(r);
-
 }
 
 
 /* =========================================================
-   rank
-========================================================= */
+   32bit group
+   16個ON
+   ========================================================= */
 
-function rank(bits){
+function rankBits(bits){
 
-  let r=0;
+  let rank=0;
 
-  let ones=16;
+  let ones=ON_PER_GROUP;
 
+  for(let i=0;i<GROUP_SIZE;i++){
 
-  for(
-    let i=0;
-    i<32;
-    i++
-  ){
+    if(bits[i]===1){
 
-    if(
-      bits[i]===1
-    ){
-
-      r+=
-        C(
-          31-i,
-          ones
-        );
+      rank+=comb(
+        GROUP_SIZE-i-1,
+        ones
+      );
 
       ones--;
 
     }
-
   }
 
+  return rank;
+}
 
-  return r;
 
+function unrankBits(rank){
+
+  const bits=new Array(GROUP_SIZE).fill(0);
+
+  let ones=ON_PER_GROUP;
+
+  for(let i=0;i<GROUP_SIZE;i++){
+
+    if(ones===0) break;
+
+    const zeroCount=comb(
+      GROUP_SIZE-i-1,
+      ones
+    );
+
+    if(rank>=zeroCount){
+
+      bits[i]=1;
+      rank-=zeroCount;
+      ones--;
+
+    }
+  }
+
+  return bits;
 }
 
 
 /* =========================================================
    CRC8
-========================================================= */
+   ========================================================= */
 
-function crc8(bits){
+function crc8(bytes){
 
   let crc=0;
 
+  for(const b of bytes){
 
-  for(
-    const bit of bits
-  ){
+    crc^=b;
 
-    const mix=
-      ((crc>>7)&1)^bit;
+    for(let i=0;i<8;i++){
 
-
-    crc=
-      (crc<<1)&255;
-
-
-    if(mix){
-
-      crc^=0x07;
+      if(crc&0x80){
+        crc=((crc<<1)^0x07)&255;
+      }else{
+        crc=(crc<<1)&255;
+      }
 
     }
-
   }
 
-
   return crc;
-
 }
 
 
 /* =========================================================
-   544 → 493
-========================================================= */
+   ビット読み込み
+   ========================================================= */
 
-function decodeBits(allBits){
+function bitsToBytes(bits){
 
-  if(
-    allBits.length<
-    SLOT_COUNT
-  ){
+  const bytes=[];
 
+  for(let i=0;i+7<bits.length;i+=8){
+
+    let v=0;
+
+    for(let j=0;j<8;j++){
+      v=(v<<1)|bits[i+j];
+    }
+
+    bytes.push(v);
+  }
+
+  return bytes;
+}
+
+
+/* =========================================================
+   3点からアフィン変換
+   ========================================================= */
+
+function solveAffine(src,dst){
+
+  /*
+    x' = ax + by + c
+    y' = dx + ey + f
+  */
+
+  const A=[
+    [src[0].x,src[0].y,1],
+    [src[1].x,src[1].y,1],
+    [src[2].x,src[2].y,1]
+  ];
+
+  function solve(values){
+
+    const m=A.map((r,i)=>[
+      r[0],r[1],r[2],values[i]
+    ]);
+
+    for(let i=0;i<3;i++){
+
+      let pivot=i;
+
+      for(let j=i+1;j<3;j++){
+
+        if(
+          Math.abs(m[j][i])>
+          Math.abs(m[pivot][i])
+        ){
+          pivot=j;
+        }
+      }
+
+      if(Math.abs(m[pivot][i])<1e-9){
+        return null;
+      }
+
+      [m[i],m[pivot]]=
+      [m[pivot],m[i]];
+
+      const p=m[i][i];
+
+      for(let k=i;k<4;k++){
+        m[i][k]/=p;
+      }
+
+      for(let j=0;j<3;j++){
+
+        if(j===i) continue;
+
+        const f=m[j][i];
+
+        for(let k=i;k<4;k++){
+          m[j][k]-=f*m[i][k];
+        }
+      }
+    }
+
+    return[
+      m[0][3],
+      m[1][3],
+      m[2][3]
+    ];
+  }
+
+  const sx=solve(dst.map(p=>p.x));
+  const sy=solve(dst.map(p=>p.y));
+
+  if(!sx||!sy) return null;
+
+  return {
+    a:sx[0],
+    b:sx[1],
+    c:sx[2],
+    d:sy[0],
+    e:sy[1],
+    f:sy[2]
+  };
+}
+
+
+/* =========================================================
+   逆アフィン
+   カメラ座標 → POTE CODE座標
+   ========================================================= */
+
+function inverseAffine(T){
+
+  const det=T.a*T.e-T.b*T.d;
+
+  if(Math.abs(det)<1e-9){
     return null;
+  }
 
+  return function(x,y){
+
+    const X=x-T.c;
+    const Y=y-T.f;
+
+    return {
+      x:( T.e*X-T.b*Y)/det,
+      y:(-T.d*X+T.a*Y)/det
+    };
+  };
+}
+
+
+/* =========================================================
+   グレースケール
+   ========================================================= */
+
+function gray(r,g,b){
+  return .299*r+.587*g+.114*b;
+}
+
+
+/* =========================================================
+   ダークピクセル候補
+   ========================================================= */
+
+function findDarkComponents(
+  imageData,
+  maxWidth=500
+){
+
+  const w=imageData.width;
+  const h=imageData.height;
+
+  const scale=Math.max(
+    1,
+    Math.ceil(w/maxWidth)
+  );
+
+  const sw=Math.floor(w/scale);
+  const sh=Math.floor(h/scale);
+
+  const data=imageData.data;
+
+  const dark=new Uint8Array(sw*sh);
+
+  for(let y=0;y<sh;y++){
+
+    for(let x=0;x<sw;x++){
+
+      const ox=x*scale;
+      const oy=y*scale;
+
+      const i=(oy*w+ox)*4;
+
+      const g=gray(
+        data[i],
+        data[i+1],
+        data[i+2]
+      );
+
+      /*
+       * 明るさだけでなく彩度も考慮
+       */
+      const mx=Math.max(
+        data[i],
+        data[i+1],
+        data[i+2]
+      );
+
+      const mn=Math.min(
+        data[i],
+        data[i+1],
+        data[i+2]
+      );
+
+      const sat=mx-mn;
+
+      if(g<105 && sat<80){
+        dark[y*sw+x]=1;
+      }
+    }
   }
 
 
-  const packet=[];
+  /*
+   * 小さな連結成分を探す
+   */
+  const visited=new Uint8Array(sw*sh);
 
+  const components=[];
+
+  const queueX=new Int32Array(sw*sh);
+  const queueY=new Int32Array(sw*sh);
+
+  for(let sy=0;sy<sh;sy++){
+
+    for(let sx=0;sx<sw;sx++){
+
+      const start=sy*sw+sx;
+
+      if(
+        !dark[start] ||
+        visited[start]
+      ) continue;
+
+      let head=0;
+      let tail=0;
+
+      queueX[tail]=sx;
+      queueY[tail]=sy;
+      tail++;
+
+      visited[start]=1;
+
+      let minX=sx;
+      let maxX=sx;
+      let minY=sy;
+      let maxY=sy;
+
+      let count=0;
+
+      let sumX=0;
+      let sumY=0;
+
+      while(head<tail){
+
+        const x=queueX[head];
+        const y=queueY[head];
+
+        head++;
+
+        count++;
+
+        sumX+=x;
+        sumY+=y;
+
+        minX=Math.min(minX,x);
+        maxX=Math.max(maxX,x);
+        minY=Math.min(minY,y);
+        maxY=Math.max(maxY,y);
+
+        const ns=[
+          [x+1,y],
+          [x-1,y],
+          [x,y+1],
+          [x,y-1]
+        ];
+
+        for(const n of ns){
+
+          const nx=n[0];
+          const ny=n[1];
+
+          if(
+            nx<0||
+            ny<0||
+            nx>=sw||
+            ny>=sh
+          ) continue;
+
+          const ni=ny*sw+nx;
+
+          if(
+            dark[ni] &&
+            !visited[ni]
+          ){
+
+            visited[ni]=1;
+
+            queueX[tail]=nx;
+            queueY[tail]=ny;
+
+            tail++;
+          }
+        }
+      }
+
+
+      if(count<8) continue;
+
+      const bw=maxX-minX+1;
+      const bh=maxY-minY+1;
+
+      if(bw<4||bh<4) continue;
+      if(bw>100||bh>100) continue;
+
+      const aspect=bw/bh;
+
+      if(aspect<.55||aspect>1.8) continue;
+
+      components.push({
+        x:(sumX/count)*scale,
+        y:(sumY/count)*scale,
+        w:bw*scale,
+        h:bh*scale,
+        area:count*scale*scale
+      });
+    }
+  }
+
+  return components;
+}
+
+
+/* =========================================================
+   マーク候補を探す
+   ========================================================= */
+
+function findMarkerTriplet(imageData){
+
+  const components=
+    findDarkComponents(imageData);
+
+  if(components.length<3){
+    return null;
+  }
+
+
+  /*
+   * まず大きさがマークらしいものだけ
+   */
+  const candidates=
+    components.filter(c=>{
+
+      const size=(c.w+c.h)/2;
+
+      return (
+        size>=18 &&
+        size<=150 &&
+        c.area>=80
+      );
+    });
+
+
+  if(candidates.length<3){
+    return null;
+  }
+
+
+  /*
+   * カメラ画像内で
+   *
+   * 左上
+   * 右上
+   * 左下
+   *
+   * にある候補を探す。
+   *
+   * 完全な座標ではなく
+   * 三角形の形を利用する。
+   */
+
+  let best=null;
+  let bestScore=Infinity;
+
+  const limit=Math.min(
+    candidates.length,
+    80
+  );
+
+
+  for(let i=0;i<limit;i++){
+
+    for(let j=i+1;j<limit;j++){
+
+      for(let k=j+1;k<limit;k++){
+
+        const p=[
+          candidates[i],
+          candidates[j],
+          candidates[k]
+        ];
+
+
+        /*
+         * x/yで並べる
+         */
+        const sortedX=[...p]
+          .sort((a,b)=>a.x-b.x);
+
+        const sortedY=[...p]
+          .sort((a,b)=>a.y-b.y);
+
+
+        const left=sortedX[0];
+        const right=sortedX[2];
+
+        const top=sortedY[0];
+        const bottom=sortedY[2];
+
+
+        /*
+         * 3点を
+         *
+         * 左上・右上・左下
+         *
+         * に割り当てる。
+         */
+
+        const remaining=p.filter(
+          q=>q!==top && q!==bottom
+        );
+
+        if(remaining.length!==1){
+          continue;
+        }
+
+
+        const middle=remaining[0];
+
+
+        let TL,TR,BL;
+
+        /*
+         * 最も上の2つを上段とする
+         */
+        const upper=[...p]
+          .sort((a,b)=>a.y-b.y)
+          .slice(0,2);
+
+        const lower=[...p]
+          .sort((a,b)=>b.y-a.y)
+          .slice(0,1)[0];
+
+        if(
+          upper.length!==2 ||
+          !lower
+        ){
+          continue;
+        }
+
+        TL=upper[0].x<upper[1].x
+          ?upper[0]
+          :upper[1];
+
+        TR=upper[0].x<upper[1].x
+          ?upper[1]
+          :upper[0];
+
+        BL=lower;
+
+
+        /*
+         * 三角形の辺長
+         */
+        const dTop=distance(TL,TR);
+        const dLeft=distance(TL,BL);
+        const dDiag=distance(TR,BL);
+
+
+        if(
+          dTop<40||
+          dLeft<40||
+          dDiag<50
+        ){
+          continue;
+        }
+
+
+        /*
+         * 直角三角形に近いか
+         */
+        const cos=
+          (
+            dTop*dTop+
+            dLeft*dLeft-
+            dDiag*dDiag
+          )/
+          (2*dTop*dLeft);
+
+
+        /*
+         * 大きな遠近歪みは許容する
+         */
+        if(cos<-.55||cos>.55){
+          continue;
+        }
+
+
+        /*
+         * 上段と左列が近すぎる候補を除外
+         */
+        const score=
+          Math.abs(dTop-dLeft)*.15+
+          Math.abs(
+            TL.w-TR.w
+          )*.4+
+          Math.abs(
+            TL.h-BL.h
+          )*.4;
+
+
+        if(score<bestScore){
+
+          bestScore=score;
+
+          best=[
+            TL,
+            TR,
+            BL
+          ];
+        }
+      }
+    }
+  }
+
+  return best;
+}
+
+
+/* =========================================================
+   画像のRGB取得
+   ========================================================= */
+
+function getPixel(imageData,x,y){
+
+  const w=imageData.width;
+  const h=imageData.height;
+
+  x=Math.round(x);
+  y=Math.round(y);
+
+  if(
+    x<0||
+    y<0||
+    x>=w||
+    y>=h
+  ){
+    return null;
+  }
+
+  const i=(y*w+x)*4;
+
+  return {
+    r:imageData.data[i],
+    g:imageData.data[i+1],
+    b:imageData.data[i+2]
+  };
+}
+
+
+/* =========================================================
+   パッチ平均
+   ========================================================= */
+
+function averagePatch(
+  imageData,
+  x,
+  y,
+  radius
+){
+
+  let r=0;
+  let g=0;
+  let b=0;
+  let n=0;
+
+  const rr=radius*radius;
 
   for(
+    let dy=-radius;
+    dy<=radius;
+    dy++
+  ){
+
+    for(
+      let dx=-radius;
+      dx<=radius;
+      dx++
+    ){
+
+      if(dx*dx+dy*dy>rr){
+        continue;
+      }
+
+      const p=getPixel(
+        imageData,
+        x+dx,
+        y+dy
+      );
+
+      if(!p) continue;
+
+      r+=p.r;
+      g+=p.g;
+      b+=p.b;
+
+      n++;
+    }
+  }
+
+  if(!n){
+    return null;
+  }
+
+  return {
+    r:r/n,
+    g:g/n,
+    b:b/n
+  };
+}
+
+
+/* =========================================================
+   色差
+   ========================================================= */
+
+function colorDistance(a,b){
+
+  const dr=a.r-b.r;
+  const dg=a.g-b.g;
+  const db=a.b-b.b;
+
+  return Math.sqrt(
+    dr*dr+
+    dg*dg+
+    db*db
+  );
+}
+
+
+/* =========================================================
+   スロット判定
+   ========================================================= */
+
+function sampleSlot(
+  imageData,
+  inv,
+  slot
+){
+
+  /*
+   * 中心をカメラ座標へ
+   */
+  const p=inv(
+    slot.x,
+    slot.y
+  );
+
+  /*
+   * 中心パッチ
+   */
+  const center=
+    averagePatch(
+      imageData,
+      p.x,
+      p.y,
+      7
+    );
+
+  if(!center){
+    return 0;
+  }
+
+
+  /*
+   * 周囲から背景色を取得
+   */
+  const surrounding=[];
+
+  const samples=12;
+
+  for(let i=0;i<samples;i++){
+
+    const a=
+      Math.PI*2*i/samples;
+
+    const q=inv(
+      slot.x+
+        Math.cos(a)*22,
+
+      slot.y+
+        Math.sin(a)*22
+    );
+
+    const c=
+      averagePatch(
+        imageData,
+        q.x,
+        q.y,
+        4
+      );
+
+    if(c){
+      surrounding.push(c);
+    }
+  }
+
+
+  if(!surrounding.length){
+    return 0;
+  }
+
+
+  let bg={
+    r:0,
+    g:0,
+    b:0
+  };
+
+  for(const c of surrounding){
+
+    bg.r+=c.r;
+    bg.g+=c.g;
+    bg.b+=c.b;
+  }
+
+  bg.r/=surrounding.length;
+  bg.g/=surrounding.length;
+  bg.b/=surrounding.length;
+
+
+  const diff=
+    colorDistance(center,bg);
+
+
+  /*
+   * 彩度差も利用
+   */
+  const centerMax=Math.max(
+    center.r,
+    center.g,
+    center.b
+  );
+
+  const centerMin=Math.min(
+    center.r,
+    center.g,
+    center.b
+  );
+
+  const bgMax=Math.max(
+    bg.r,
+    bg.g,
+    bg.b
+  );
+
+  const bgMin=Math.min(
+    bg.r,
+    bg.g,
+    bg.b
+  );
+
+  const saturationDiff=
+    Math.abs(
+      (centerMax-centerMin)-
+      (bgMax-bgMin)
+    );
+
+
+  /*
+   * ある程度の色差があれば
+   * 図形あり
+   */
+  if(
+    diff>24 ||
+    saturationDiff>14
+  ){
+    return 1;
+  }
+
+  return 0;
+}
+
+
+/* =========================================================
+   ビット読み取り
+   ========================================================= */
+
+function readBits(
+  imageData,
+  inv
+){
+
+  const bits=[];
+
+  for(const slot of SLOTS){
+
+    bits.push(
+      sampleSlot(
+        imageData,
+        inv,
+        slot
+      )
+    );
+  }
+
+  return bits;
+}
+
+
+/* =========================================================
+   データ復元
+   ========================================================= */
+
+function decodeBits(bits){
+
+  if(bits.length!==SLOT_COUNT){
+    return null;
+  }
+
+
+  const payload=[];
+
+
+  /*
+   * 各32ビットグループ
+   */
+  for(
     let g=0;
-    g<17;
+    g<GROUPS;
     g++
   ){
 
     const group=
-      allBits.slice(
-        g*32,
-        g*32+32
+      bits.slice(
+        g*GROUP_SIZE,
+        (g+1)*GROUP_SIZE
       );
 
 
-    const count=
+    const ones=
       group.reduce(
         (a,b)=>a+b,
         0
@@ -1774,391 +1341,474 @@ function decodeBits(allBits){
 
 
     /*
-      16個ONでなければ
-      誤検出として破棄。
-    */
-
-    if(
-      count!==16
-    ){
-
+     * ノイズが多い場合は失敗
+     */
+    if(ones!==ON_PER_GROUP){
       return null;
-
     }
 
 
-    const value=
-      rank(group);
+    const rank=
+      rankBits(group);
 
 
-    let n=value;
+    /*
+     * 29bit
+     */
+    for(let b=28;b>=0;b--){
 
-
-    for(
-      let i=28;
-      i>=0;
-      i--
-    ){
-
-      const power=
-        Math.pow(
-          2,
-          i
-        );
-
-
-      packet.push(
-        Math.floor(
-          n/power
-        )%2
+      payload.push(
+        (rank>>b)&1
       );
-
     }
-
   }
 
 
-  return packet.slice(
-    0,
-    493
-  );
-
-}
-
-
-/* =========================================================
-   パケット → 文字
-========================================================= */
-
-function bitsToText(packet){
-
-  if(
-    !packet ||
-    packet.length<493
-  ){
-
-    return null;
-
-  }
-
+  /*
+   * 493bit
+   *
+   * 先頭5bit = 長さ
+   * 次の480bit = 30byte相当
+   * 最後8bit = CRC
+   */
+  const lengthBits=
+    payload.slice(0,5);
 
   let length=0;
 
-
-  for(
-    let i=0;
-    i<5;
-    i++
-  ){
-
-    length=
-      length*2+
-      packet[i];
-
+  for(const b of lengthBits){
+    length=(length<<1)|b;
   }
 
 
-  if(
-    length<1||
-    length>30
-  ){
-
+  if(length<0||length>30){
     return null;
-
   }
 
 
-  const body=
-    packet.slice(
-      5,
-      485
-    );
+  const dataBits=
+    payload.slice(5,5+length*16);
 
 
-  const crcBits=
-    packet.slice(
-      485,
-      493
-    );
-
+  const crcStart=
+    5+480;
 
   let storedCRC=0;
 
-
-  for(
-    const bit of crcBits
-  ){
-
-    storedCRC=
-      storedCRC*2+
-      bit;
-
-  }
-
-
-  const actualCRC=
-    crc8(body);
-
-
-  if(
-    storedCRC!==actualCRC
-  ){
-
-    return null;
-
-  }
-
-
-  let text="";
-
-
   for(
     let i=0;
-    i<length;
+    i<8;
     i++
   ){
 
-    let code=0;
+    storedCRC=
+      (storedCRC<<1)|
+      payload[crcStart+i];
+  }
 
 
-    for(
-      let b=0;
-      b<16;
-      b++
-    ){
-
-      code=
-        code*2+
-        body[
-          i*16+b
-        ];
-
-    }
+  const bytes=
+    bitsToBytes(
+      dataBits
+    );
 
 
-    text+=
-      String.fromCharCode(code);
+  const actualCRC=
+    crc8(bytes);
 
+
+  if(actualCRC!==storedCRC){
+    return null;
+  }
+
+
+  /*
+   * UTF-16
+   */
+  let text="";
+
+  for(let i=0;i<bytes.length;i+=2){
+
+    const hi=bytes[i]||0;
+    const lo=bytes[i+1]||0;
+
+    text+=String.fromCharCode(
+      (hi<<8)|lo
+    );
   }
 
 
   return text;
-
 }
 
 
 /* =========================================================
-   URL判定
-========================================================= */
+   マーカー検出 → 読み取り
+   ========================================================= */
 
-function isURL(text){
-
-  return /^https?:\/\/[^\s]+$/i.test(
-    text.trim()
-  );
-
-}
-
-
-/* =========================================================
-   読み取り成功
-========================================================= */
-
-function success(text){
-
-  scanning=false;
-
-
-  if(scanTimer){
-
-    clearInterval(
-      scanTimer
-    );
-
-    scanTimer=null;
-
-  }
-
-
-  scanButton.textContent=
-    "スキャン";
-
+function decodeImage(imageData){
 
   /*
-    URLなら新しいタブ。
+   * 3マーカーを探す
+   */
+  const found=
+    findMarkerTriplet(
+      imageData
+    );
 
-    スキャンボタンを押した時点で
-    確保しておいたタブを使う。
-  */
-
-  if(
-    isURL(text)
-  ){
-
-    if(
-      pendingWindow &&
-      !pendingWindow.closed
-    ){
-
-      pendingWindow.location.href=
-        text.trim();
-
-      pendingWindow=null;
-
-    }
-    else{
-
-      /*
-        ポップアップブロック等で
-        タブを確保できなかった場合。
-      */
-
-      window.open(
-        text.trim(),
-        "_blank"
-      );
-
-    }
-
-
-    result.style.display="none";
-
-    return;
-
+  if(!found){
+    return null;
   }
 
 
   /*
-    URLではない場合
-  */
-
-  if(pendingWindow){
-
-    try{
-
-      pendingWindow.close();
-
+   * 発見した
+   *
+   * 左上
+   * 右上
+   * 左下
+   *
+   * を固定座標へ対応
+   */
+  const src=[
+    {
+      x:found[0].x,
+      y:found[0].y
+    },
+    {
+      x:found[1].x,
+      y:found[1].y
+    },
+    {
+      x:found[2].x,
+      y:found[2].y
     }
-    catch(e){}
-
-    pendingWindow=null;
-
-  }
+  ];
 
 
-  result.style.display="block";
-
-  result.textContent=text;
-
-}
-
-
-/* =========================================================
-   メイン
-========================================================= */
-
-function tryDecode(){
-
-  const candidates=
-    findAlignmentMarks();
-
-
-  const marks=
-    assignMarks(
-      candidates
-    );
-
-
-  if(!marks){
-
-    return;
-
-  }
+  const dst=MARKS;
 
 
   const T=
-    makeAffine(marks);
-
+    solveAffine(
+      src,
+      dst
+    );
 
   if(!T){
+    return null;
+  }
 
-    return;
 
+  const inv=
+    inverseAffine(T);
+
+  if(!inv){
+    return null;
   }
 
 
   const bits=
-    readAllSlots(T);
+    readBits(
+      imageData,
+      inv
+    );
 
 
-  const packet=
+  /*
+   * そのまま読む
+   */
+  let text=
     decodeBits(bits);
 
-
-  if(!packet){
-
-    return;
-
+  if(text!==null){
+    return text;
   }
 
 
-  const text=
-    bitsToText(packet);
-
-
-  if(
-    text===null
-  ){
-
-    return;
-
-  }
-
-
-  success(text);
-
+  /*
+   * 閾値が厳しすぎる場合に
+   * 少しだけ補正して再試行
+   *
+   * 今回は構造確認を優先
+   */
+  return null;
 }
 
 
 /* =========================================================
-   終了処理
-========================================================= */
+   カメラ
+   ========================================================= */
 
-window.addEventListener(
-  "beforeunload",
-  ()=>{
+let stream=null;
 
-    if(scanTimer){
 
-      clearInterval(
-        scanTimer
+async function startCamera(){
+
+  try{
+
+    stream=
+      await navigator.mediaDevices.getUserMedia({
+        video:{
+          facingMode:{
+            ideal:"environment"
+          },
+          width:{
+            ideal:1280
+          },
+          height:{
+            ideal:1280
+          }
+        },
+        audio:false
+      });
+
+    video.srcObject=stream;
+
+    cameraMessage.textContent="";
+
+  }catch(e){
+
+    cameraMessage.textContent="";
+
+  }
+}
+
+
+/* =========================================================
+   カメラフレーム取得
+   ========================================================= */
+
+function captureCamera(){
+
+  if(
+    !video.videoWidth||
+    !video.videoHeight
+  ){
+    return null;
+  }
+
+
+  canvas.width=
+    video.videoWidth;
+
+  canvas.height=
+    video.videoHeight;
+
+
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  return ctx.getImageData(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+}
+
+
+/* =========================================================
+   スキャン
+   ========================================================= */
+
+scanButton.addEventListener(
+  "click",
+  async()=>{
+
+    flash.classList.remove("active");
+
+    /*
+     * reflow
+     */
+    void flash.offsetWidth;
+
+    flash.classList.add("active");
+
+
+    const imageData=
+      captureCamera();
+
+    if(!imageData){
+      return;
+    }
+
+
+    /*
+     * 少し待って処理
+     */
+    await new Promise(
+      r=>setTimeout(r,20)
+    );
+
+
+    const text=
+      decodeImage(
+        imageData
       );
 
+
+    if(text!==null){
+
+      showResult(text);
+
+    }else{
+
+      /*
+       * 失敗しても
+       * 余計な説明は表示しない
+       */
     }
+  }
+);
 
 
-    if(stream){
+/* =========================================================
+   画像読み込み
+   ========================================================= */
 
-      stream
-        .getTracks()
-        .forEach(
-          track=>track.stop()
+imageButton.addEventListener(
+  "click",
+  ()=>{
+    imageInput.click();
+  }
+);
+
+
+imageInput.addEventListener(
+  "change",
+  ()=>{
+
+    const file=
+      imageInput.files[0];
+
+    if(!file) return;
+
+
+    const img=
+      new Image();
+
+
+    img.onload=()=>{
+
+      canvas.width=
+        img.naturalWidth;
+
+      canvas.height=
+        img.naturalHeight;
+
+
+      ctx.drawImage(
+        img,
+        0,
+        0
+      );
+
+
+      const imageData=
+        ctx.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
         );
 
-    }
+
+      const text=
+        decodeImage(
+          imageData
+        );
 
 
-    if(pendingWindow){
+      if(text!==null){
 
-      try{
-
-        pendingWindow.close();
+        showResult(text);
 
       }
-      catch(e){}
 
+      URL.revokeObjectURL(
+        img.src
+      );
+    };
+
+
+    img.src=
+      URL.createObjectURL(file);
+  }
+);
+
+
+/* =========================================================
+   結果表示
+   ========================================================= */
+
+function showResult(text){
+
+  /*
+   * URLなら新しいタブ
+   */
+  if(
+    /^https?:\/\/[^\s]+$/i.test(text)
+  ){
+
+    const w=
+      window.open(
+        text,
+        "_blank"
+      );
+
+    /*
+     * ポップアップブロック時
+     */
+    if(!w){
+      resultText.textContent=text;
+      result.classList.add("show");
     }
 
+    return;
+  }
+
+
+  resultText.textContent=text;
+
+  result.classList.add("show");
+}
+
+
+resultClose.addEventListener(
+  "click",
+  ()=>{
+    result.classList.remove("show");
+  }
+);
+
+
+/* =========================================================
+   起動
+   ========================================================= */
+
+startCamera();
+
+
+/* =========================================================
+   ページを離れたらカメラ停止
+   ========================================================= */
+
+window.addEventListener(
+  "pagehide",
+  ()=>{
+    if(stream){
+
+      for(const track of stream.getTracks()){
+        track.stop();
+      }
+    }
   }
 );
 
