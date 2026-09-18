@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<title>POTE CODE SCANNER</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f7f2e3;
+  color:#66584d;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Sans",
+    "Yu Gothic",
+    sans-serif;
+}
+
+.wrap{
+  width:min(900px,96vw);
+  margin:auto;
+  padding:28px 12px 50px;
+}
+
+.title{
+  text-align:center;
+  font-size:42px;
+  font-weight:800;
+  letter-spacing:.18em;
+  margin-left:.18em;
+}
+
+.subtitle{
+  text-align:center;
+  margin-top:7px;
+  font-size:12px;
+  letter-spacing:.28em;
+  opacity:.7;
+}
+
+
+/* =========================================
+   スキャナー
+========================================= */
+
+.scanner{
+  position:relative;
+  width:min(760px,100%);
+  aspect-ratio:1;
+  margin:28px auto 18px;
+
+  background:#fffdf7;
+
+  border-radius:28px;
+
+  overflow:hidden;
+
+  box-shadow:
+    0 8px 30px rgba(100,80,50,.10);
+}
+
+#video{
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  display:none;
+}
+
+#canvas{
+  width:100%;
+  height:100%;
+
+  display:none;
+}
+
+
+/* 待機画面 */
+
+.placeholder{
+  position:absolute;
+  inset:0;
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  padding:30px;
+}
+
+.pote-icon{
+  width:105px;
+  height:105px;
+
+  border-radius:50%;
+
+  background:#D99A3D;
+
+  position:relative;
+
+  margin-bottom:20px;
+}
+
+.pote-icon::before,
+.pote-icon::after{
+  content:"";
+
+  position:absolute;
+
+  width:9px;
+  height:9px;
+
+  border-radius:50%;
+
+  background:#51483F;
+
+  top:39px;
+}
+
+.pote-icon::before{
+  left:32px;
+}
+
+.pote-icon::after{
+  right:32px;
+}
+
+.pote-mouth{
+  position:absolute;
+
+  left:39px;
+  top:52px;
+
+  width:27px;
+  height:15px;
+
+  border-bottom:
+    5px solid #51483F;
+
+  border-radius:50%;
+}
+
+.placeholder-title{
+  font-size:21px;
+  font-weight:800;
+}
+
+.placeholder-text{
+  margin-top:7px;
+  font-size:13px;
+  line-height:1.7;
+  opacity:.7;
+}
+
+
+/* スキャン枠 */
+
+.scan-frame{
+  position:absolute;
+
+  left:8%;
+  top:8%;
+
+  width:84%;
+  height:84%;
+
+  border:2px solid rgba(113,134,108,.8);
+
+  border-radius:26px;
+
+  pointer-events:none;
+
+  display:none;
+}
+
+.scan-frame::before{
+  content:"";
+
+  position:absolute;
+
+  left:10%;
+  right:10%;
+
+  top:50%;
+
+  height:2px;
+
+  background:rgba(113,134,108,.5);
+
+  animation:scan 2s linear infinite;
+}
+
+@keyframes scan{
+
+  0%{
+    transform:translateY(-180px);
+  }
+
+  100%{
+    transform:translateY(180px);
+  }
+
+}
+
+
+/* =========================================
+   ボタン
+========================================= */
+
+.buttons{
+  display:flex;
+
+  justify-content:center;
+
+  flex-wrap:wrap;
+
+  gap:9px;
+
+  margin-top:15px;
+}
+
+button{
+  border:0;
+
+  border-radius:999px;
+
+  padding:12px 20px;
+
+  background:#71866c;
+
+  color:white;
+
+  font-size:14px;
+
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+button.secondary{
+  background:#c69b5c;
+}
+
+button.stop{
+  background:#8b7162;
+}
+
+
+/* ファイル入力 */
+
+input[type=file]{
+  display:none;
+}
+
+
+/* =========================================
+   結果
+========================================= */
+
+.result{
+  width:min(700px,100%);
+
+  margin:24px auto 0;
+
+  padding:20px;
+
+  background:
+    rgba(255,255,255,.65);
+
+  border-radius:20px;
+
+  text-align:center;
+}
+
+.result-label{
+  font-size:11px;
+  letter-spacing:.2em;
+  opacity:.65;
+}
+
+.result-text{
+  margin-top:10px;
+
+  min-height:42px;
+
+  font-size:24px;
+
+  font-weight:800;
+
+  color:#5d5147;
+
+  word-break:break-word;
+}
+
+.status{
+  margin-top:10px;
+
+  font-size:13px;
+
+  line-height:1.7;
+}
+
+.good{
+  color:#58734e;
+  font-weight:800;
+}
+
+.bad{
+  color:#a05e4e;
+  font-weight:800;
+}
+
+
+/* =========================================
+   詳細
+========================================= */
+
+.details{
+  width:min(700px,100%);
+
+  margin:12px auto;
+
+  padding:15px 18px;
+
+  background:
+    rgba(255,255,255,.45);
+
+  border-radius:16px;
+
+  font-size:12px;
+
+  line-height:1.8;
+
+  opacity:.8;
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div class="wrap">
+
+
+  <div class="title">
+    POTE CODE
+  </div>
+
+  <div class="subtitle">
+    SCANNER
+  </div>
+
+
+  <!-- =====================================
+       スキャナー画面
+  ====================================== -->
+
+  <div class="scanner">
+
+    <video
+      id="video"
+      autoplay
+      playsinline>
+    </video>
+
+
+    <canvas id="canvas"></canvas>
+
+
+    <div
+      class="placeholder"
+      id="placeholder">
+
+      <div class="pote-icon">
+
+        <div class="pote-mouth"></div>
+
+      </div>
+
+      <div class="placeholder-title">
+        POTE CODEを読み取ろう
+      </div>
+
+      <div class="placeholder-text">
+        カメラで映すか、画像を選択してください
+      </div>
+
+    </div>
+
+
+    <div
+      class="scan-frame"
+      id="scanFrame">
+    </div>
+
+  </div>
+
+
+  <!-- =====================================
+       操作
+  ====================================== -->
+
+  <div class="buttons">
+
+    <button
+      onclick="startCamera()">
+      カメラで読み取る
+    </button>
+
+
+    <label
+      class="buttonLabel">
+
+      <button
+        type="button"
+        onclick="fileInput.click()"
+        class="secondary">
+
+        画像から読み取る
+
+      </button>
+
+    </label>
+
+
+    <button
+      onclick="stopCamera()"
+      class="stop">
+
+      カメラ停止
+
+    </button>
+
+  </div>
+
+
+  <input
+    type="file"
+    id="fileInput"
+    accept="image/*">
+
+
+  <!-- =====================================
+       結果
+  ====================================== -->
+
+  <div class="result">
+
+    <div class="result-label">
+      DECODE RESULT
+    </div>
+
+    <div
+      class="result-text"
+      id="resultText">
+
+      ここに結果が表示されます
+
+    </div>
+
+    <div
+      class="status"
+      id="status">
+
+      POTE CODEを読み取ってください。
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="details"
+    id="details">
+
+    固定スロット：544<br>
+    データ方式：図形の「ある / ない」<br>
+    色・図形種類・大きさ：判定には使用しません
+
+  </div>
+
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   POTE CODE SCANNER
+   Generator側と同じ固定配置・同じデータ方式
+========================================================= */
+
+
+/* =========================================================
+   基本設定
+========================================================= */
+
+const SVG_SIZE = 1500;
+
+const CENTER = 750;
+
+const SLOT_COUNT = 544;
+
+
+/* =========================================================
+   固定乱数
+========================================================= */
+
+let seed = 9283746;
+
+
+function random(){
+
+  seed =
+    (seed * 1664525 + 1013904223)
+    >>> 0;
+
+  return seed / 4294967296;
+
+}
+
+
+/* =========================================================
+   Generatorと同じスロット配置
+========================================================= */
+
+function createSlots(){
+
+  seed = 9283746;
+
+  const result = [];
+
+  const MIN_R = 150;
+  const MAX_R = 675;
+
+  const MIN_DISTANCE = 31;
+
+  let safety = 0;
+
+
+  while(
+    result.length < SLOT_COUNT &&
+    safety < 300000
+  ){
+
+    safety++;
+
+
+    const r =
+      Math.sqrt(
+        random() *
+        (
+          MAX_R * MAX_R -
+          MIN_R * MIN_R
+        ) +
+        MIN_R * MIN_R
+      );
+
+
+    const angle =
+      random() *
+      Math.PI * 2;
+
+
+    const x =
+      CENTER +
+      Math.cos(angle) * r;
+
+
+    const y =
+      CENTER +
+      Math.sin(angle) * r;
+
+
+    let ok = true;
+
+
+    for(const p of result){
+
+      const dx = x - p.x;
+      const dy = y - p.y;
+
+
+      if(
+        dx*dx + dy*dy <
+        MIN_DISTANCE * MIN_DISTANCE
+      ){
+
+        ok = false;
+        break;
+
+      }
+
+    }
+
+
+    if(ok){
+
+      result.push({x,y});
+
+    }
+
+  }
+
+
+  return result;
+
+}
+
+
+const DATA_SLOTS =
+  createSlots();
+
+
+/* =========================================================
+   組み合わせ
+========================================================= */
+
+function C(n,k){
+
+  if(k < 0 || k > n){
+
+    return 0;
+
+  }
+
+
+  k =
+    Math.min(k,n-k);
+
+
+  let r = 1;
+
+
+  for(let i=1;i<=k;i++){
+
+    r =
+      r * (n-k+i) / i;
+
+  }
+
+
+  return Math.round(r);
+
+}
+
+
+/* =========================================================
+   32bit中16個ONの組み合わせ
+
+   Generator:
+   rank → pattern
+
+   Scanner:
+   pattern → rank
+========================================================= */
+
+function rankPattern(bits){
+
+  let rank = 0;
+
+  let ones = 16;
+
+
+  for(let i=0;i<32;i++){
+
+    if(bits[i] === 1){
+
+      /*
+       現在位置を0にした場合、
+       残りでones個の1を置く組み合わせ数
+      */
+
+      rank +=
+        C(
+          31-i,
+          ones
+        );
+
+
+      ones--;
+
+    }
+
+  }
+
+
+  return rank;
+
+}
+
+
+/* =========================================================
+   544bit → 17グループ
+========================================================= */
+
+function decodeGroups(bits){
+
+  const packet = [];
+
+
+  for(let g=0;g<17;g++){
+
+    const group =
+      bits.slice(
+        g*32,
+        g*32+32
+      );
+
+
+    if(group.length !== 32){
+
+      throw new Error(
+        "スロット数が不足しています。"
+      );
+
+    }
+
+
+    /*
+      32個中16個ONでなければ
+      正常なPOTE CODEではない
+    */
+
+    let count = 0;
+
+
+    for(const b of group){
+
+      count += b;
+
+    }
+
+
+    if(count !== 16){
+
+      throw new Error(
+        `グループ${g+1}の図形数が不正です。`
+      );
+
+    }
+
+
+    const value =
+      rankPattern(group);
+
+
+    /*
+      29bit
+    */
+
+    const groupBits = [];
+
+
+    for(let b=28;b>=0;b--){
+
+      groupBits.push(
+        Math.floor(
+          value /
+          Math.pow(2,b)
+        ) % 2
+      );
+
+    }
+
+
+    packet.push(...groupBits);
+
+  }
+
+
+  return packet;
+
+}
+
+
+/* =========================================================
+   CRC8
+========================================================= */
+
+function crc8(bits){
+
+  let crc = 0;
+
+
+  for(const bit of bits){
+
+    const mix =
+      ((crc >> 7) & 1) ^ bit;
+
+
+    crc =
+      ((crc << 1) & 255);
+
+
+    if(mix){
+
+      crc ^= 0x07;
+
+    }
+
+  }
+
+
+  return crc;
+
+}
+
+
+/* =========================================================
+   bits → 数値
+========================================================= */
+
+function bitsToNumber(bits){
+
+  let n = 0;
+
+
+  for(const b of bits){
+
+    n = n * 2 + b;
+
+  }
+
+
+  return n;
+
+}
+
+
+/* =========================================================
+   パケット → 文字
+========================================================= */
+
+function decodePacket(packet){
+
+  /*
+    最初の5bit = 文字数
+  */
+
+  const length =
+    bitsToNumber(
+      packet.slice(0,5)
+    );
+
+
+  if(length < 1 || length > 30){
+
+    throw new Error(
+      "文字数情報が不正です。"
+    );
+
+  }
+
+
+  /*
+    本文480bit
+  */
+
+  const body =
+    packet.slice(
+      5,
+      5+480
+    );
+
+
+  /*
+    CRC
+  */
+
+  const receivedCRC =
+    bitsToNumber(
+      packet.slice(
+        5+480,
+        5+480+8
+      )
+    );
+
+
+  const calculatedCRC =
+    crc8(body);
+
+
+  if(
+    receivedCRC !== calculatedCRC
+  ){
+
+    throw new Error(
+      "CRCエラー：読み取り結果が一致しません。"
+    );
+
+  }
+
+
+  /*
+    UTF-16 code units
+  */
+
+  let text = "";
+
+
+  for(let i=0;i<30;i++){
+
+    const chunk =
+      body.slice(
+        i*16,
+        i*16+16
+      );
+
+
+    const code =
+      bitsToNumber(chunk);
+
+
+    /*
+      空き部分
+    */
+
+    if(i >= length){
+
+      continue;
+
+    }
+
+
+    text +=
+      String.fromCharCode(code);
+
+  }
+
+
+  return text;
+
+}
+
+
+/* =========================================================
+   画像解析
+========================================================= */
+
+
+/*
+  POTE CODEは
+
+  1500 × 1500
+
+  の座標系。
+
+  読み取り画像をこの座標系に合わせる。
+*/
+
+
+const canvas =
+  document.getElementById("canvas");
+
+const ctx =
+  canvas.getContext("2d",{
+    willReadFrequently:true
+  });
+
+
+/* =========================================================
+   中央サンプル
+
+   図形が存在すると、
+   中心位置には必ず色がある。
+
+   そのため中心付近の
+   「背景からの差」を調べる。
+========================================================= */
+
+function sampleSlot(
+  imageData,
+  x,
+  y,
+  scale
+){
+
+  /*
+    少し広めの範囲を調べる。
+
+    大きい図形でも
+    小さい図形でも中心には
+    図形が存在する。
+  */
+
+  const radius =
+    Math.max(
+      2,
+      Math.round(4 * scale)
+    );
+
+
+  let foreground = 0;
+  let total = 0;
+
+
+  for(
+    let yy=-radius;
+    yy<=radius;
+    yy++
+  ){
+
+    for(
+      let xx=-radius;
+      xx<=radius;
+      xx++
+    ){
+
+      const px =
+        Math.round(
+          x+xx
+        );
+
+
+      const py =
+        Math.round(
+          y+yy
+        );
+
+
+      if(
+        px<0 ||
+        py<0 ||
+        px>=imageData.width ||
+        py>=imageData.height
+      ){
+
+        continue;
+
+      }
+
+
+      const index =
+        (py*imageData.width+px)*4;
+
+
+      const r =
+        imageData.data[index];
+
+      const g =
+        imageData.data[index+1];
+
+      const b =
+        imageData.data[index+2];
+
+      const a =
+        imageData.data[index+3];
+
+
+      if(a < 50){
+
+        continue;
+
+      }
+
+
+      /*
+        POTE CODE背景は
+        かなり明るい。
+
+        明るさが一定以上低ければ
+        図形と判断。
+      */
+
+      const brightness =
+        (
+          r*0.299 +
+          g*0.587 +
+          b*0.114
+        );
+
+
+      if(brightness < 225){
+
+        foreground++;
+
+      }
+
+
+      total++;
+
+    }
+
+  }
+
+
+  if(total === 0){
+
+    return 0;
+
+  }
+
+
+  /*
+    中心部分の一定割合以上が
+    色付きならON
+  */
+
+  return (
+    foreground / total > 0.12
+  ) ? 1 : 0;
+
+}
+
+
+/* =========================================================
+   画像を正方形として解析
+========================================================= */
+
+function readImage(){
+
+  const w =
+    canvas.width;
+
+  const h =
+    canvas.height;
+
+
+  const imageData =
+    ctx.getImageData(
+      0,
+      0,
+      w,
+      h
+    );
+
+
+  /*
+    画像の中心を
+    POTE CODEの中心と仮定。
+
+    正方形画像なら
+    そのまま。
+
+    カメラでは次の段階で
+    自動位置合わせを追加できる。
+  */
+
+  const scale =
+    w / SVG_SIZE;
+
+
+  const bits = [];
+
+
+  for(let i=0;i<SLOT_COUNT;i++){
+
+    const p =
+      DATA_SLOTS[i];
+
+
+    const x =
+      p.x * scale;
+
+
+    const y =
+      p.y * scale;
+
+
+    bits.push(
+      sampleSlot(
+        imageData,
+        x,
+        y,
+        scale
+      )
+    );
+
+  }
+
+
+  return bits;
+
+}
+
+
+/* =========================================================
+   デコード
+========================================================= */
+
+function decodeCurrentImage(){
+
+  try{
+
+    const bits =
+      readImage();
+
+
+    /*
+      544bit
+    */
+
+    if(bits.length !== 544){
+
+      throw new Error(
+        "スロット数が一致しません。"
+      );
+
+    }
+
+
+    const packet =
+      decodeGroups(bits);
+
+
+    const text =
+      decodePacket(packet);
+
+
+    showSuccess(
+      text,
+      bits
+    );
+
+
+  }catch(error){
+
+    showError(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   結果表示
+========================================================= */
+
+function showSuccess(
+  text,
+  bits
+){
+
+  document.getElementById(
+    "resultText"
+  ).textContent = text;
+
+
+  document.getElementById(
+    "status"
+  ).innerHTML =
+    `<span class="good">
+      ✓ POTE CODEを正常に読み取りました
+    </span>`;
+
+
+  let count = 0;
+
+
+  for(const b of bits){
+
+    count += b;
+
+  }
+
+
+  document.getElementById(
+    "details"
+  ).innerHTML =
+    `読み取りスロット：544 / 544<br>`+
+    `ON図形：${count}個<br>`+
+    `CRC：正常<br>`+
+    `データ判定：図形の「ある / ない」のみ`;
+
+}
+
+
+/* =========================================================
+   エラー
+========================================================= */
+
+function showError(message){
+
+  document.getElementById(
+    "resultText"
+  ).textContent =
+    "読み取れませんでした";
+
+
+  document.getElementById(
+    "status"
+  ).innerHTML =
+    `<span class="bad">
+      × ${message}
+    </span>`;
+
+
+  document.getElementById(
+    "details"
+  ).innerHTML =
+    `POTE CODEが画面内に収まっているか確認してください。<br>`+
+    `画像がぼやけている場合は、もう一度近づけて撮影してください。`;
+
+}
+
+
+/* =========================================================
+   ファイル読み込み
+========================================================= */
+
+const fileInput =
+  document.getElementById(
+    "fileInput"
+  );
+
+
+fileInput.addEventListener(
+  "change",
+  function(){
+
+    const file =
+      this.files[0];
+
+
+    if(!file){
+
+      return;
+
+    }
+
+
+    const img =
+      new Image();
+
+
+    img.onload = function(){
+
+      /*
+        正方形キャンバスに合わせる
+      */
+
+      const size =
+        Math.min(
+          img.width,
+          img.height
+        );
+
+
+      canvas.width =
+        1500;
+
+      canvas.height =
+        1500;
+
+
+      ctx.fillStyle =
+        "#FFFDF5";
+
+
+      ctx.fillRect(
+        0,
+        0,
+        1500,
+        1500
+      );
+
+
+      /*
+        中央部分を正方形として切り出す
+      */
+
+      const sx =
+        (img.width-size)/2;
+
+      const sy =
+        (img.height-size)/2;
+
+
+      ctx.drawImage(
+        img,
+        sx,
+        sy,
+        size,
+        size,
+        0,
+        0,
+        1500,
+        1500
+      );
+
+
+      document.getElementById(
+        "placeholder"
+      ).style.display =
+        "none";
+
+
+      canvas.style.display =
+        "block";
+
+
+      video.style.display =
+        "none";
+
+
+      document.getElementById(
+        "scanFrame"
+      ).style.display =
+        "none";
+
+
+      decodeCurrentImage();
+
+    };
+
+
+    img.onerror = function(){
+
+      showError(
+        "画像を読み込めませんでした。"
+      );
+
+    };
+
+
+    img.src =
+      URL.createObjectURL(file);
+
+  }
+);
+
+
+/* =========================================================
+   カメラ
+========================================================= */
+
+const video =
+  document.getElementById(
+    "video"
+  );
+
+let stream = null;
+
+let cameraTimer = null;
+
+
+/* =========================================================
+   カメラ開始
+========================================================= */
+
+async function startCamera(){
+
+  try{
+
+    if(stream){
+
+      stopCamera();
+
+    }
+
+
+    stream =
+      await navigator.mediaDevices
+        .getUserMedia({
+
+          video:{
+            facingMode:{
+              ideal:"environment"
+            },
+
+            width:{
+              ideal:1920
+            },
+
+            height:{
+              ideal:1920
+            }
+
+          },
+
+          audio:false
+
+        });
+
+
+    video.srcObject =
+      stream;
+
+
+    video.style.display =
+      "block";
+
+
+    canvas.style.display =
+      "none";
+
+
+    document.getElementById(
+      "placeholder"
+    ).style.display =
+      "none";
+
+
+    document.getElementById(
+      "scanFrame"
+    ).style.display =
+      "block";
+
+
+    cameraTimer =
+      setInterval(
+        scanCamera,
+        700
+      );
+
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "カメラでPOTE CODEを探しています…";
+
+
+  }catch(error){
+
+    showError(
+      "カメラを使用できません。HTTPSで開いているか確認してください。"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   カメラ停止
+========================================================= */
+
+function stopCamera(){
+
+  if(cameraTimer){
+
+    clearInterval(
+      cameraTimer
+    );
+
+    cameraTimer = null;
+
+  }
+
+
+  if(stream){
+
+    for(const track of stream.getTracks()){
+
+      track.stop();
+
+    }
+
+    stream = null;
+
+  }
+
+
+  video.srcObject = null;
+
+
+  video.style.display =
+    "none";
+
+
+  document.getElementById(
+    "scanFrame"
+  ).style.display =
+    "none";
+
+
+  document.getElementById(
+    "placeholder"
+  ).style.display =
+    "flex";
+
+}
+
+
+/* =========================================================
+   カメラ画像解析
+========================================================= */
+
+function scanCamera(){
+
+  if(
+    !stream ||
+    video.readyState < 2
+  ){
+
+    return;
+
+  }
+
+
+  const size =
+    Math.min(
+      video.videoWidth,
+      video.videoHeight
+    );
+
+
+  if(size <= 0){
+
+    return;
+
+  }
+
+
+  canvas.width =
+    1500;
+
+  canvas.height =
+    1500;
+
+
+  const sx =
+    (video.videoWidth-size)/2;
+
+  const sy =
+    (video.videoHeight-size)/2;
+
+
+  ctx.drawImage(
+    video,
+    sx,
+    sy,
+    size,
+    size,
+    0,
+    0,
+    1500,
+    1500
+  );
+
+
+  /*
+    まず仮読み取り
+  */
+
+  try{
+
+    const bits =
+      readImage();
+
+
+    /*
+      各グループが
+      16ONか確認。
+
+      これを通ったら
+      POTE CODEらしい。
+    */
+
+    let valid = true;
+
+
+    for(let g=0;g<17;g++){
+
+      const group =
+        bits.slice(
+          g*32,
+          g*32+32
+        );
+
+
+      let count = 0;
+
+
+      for(const b of group){
+
+        count += b;
+
+      }
+
+
+      if(count !== 16){
+
+        valid = false;
+        break;
+
+      }
+
+    }
+
+
+    if(!valid){
+
+      return;
+
+    }
+
+
+    const packet =
+      decodeGroups(bits);
+
+
+    const text =
+      decodePacket(packet);
+
+
+    /*
+      成功！
+
+      カメラを停止。
+    */
+
+    showSuccess(
+      text,
+      bits
+    );
+
+
+    stopCamera();
+
+
+  }catch(error){
+
+    /*
+      カメラでは
+      読み取り途中の失敗は普通なので
+      何も表示しない。
+    */
+
+  }
+
+}
+
+
+/* =========================================================
+   ページ離脱時
+========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  stopCamera
+);
+
+</script>
+
+</body>
+</html>
